@@ -36,7 +36,6 @@ if( class_exists('WC_Payment_Gateway') && !class_exists('WC_sama') ){
 
             add_action('woocommerce_receipt_' . $this->id . '', array($this, 'Send_to_sama_Gateway'));
             add_action('woocommerce_api_' . strtolower(get_class($this)) . '', array($this, 'Return_from_sama_Gateway'));
-            add_action( 'woocommerce_before_checkout_form', array( $this, 'display_static_html_block' ), 10 );
         }
 
 		public function admin_options(){

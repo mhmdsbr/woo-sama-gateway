@@ -54,43 +54,31 @@ add_action('plugins_loaded', 'load_sama_woo_gateway', 0);
 
 
 /**
- * Custom function to declare compatibility with cart_checkout_blocks feature
+ * Adding check out custom field
  */
-function declare_sama_cart_checkout_blocks_compatibility() {
-    // Check if the required class exists
-    if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
-        // Declare compatibility for 'cart_checkout_blocks'
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__, true);
+add_filter('woocommerce_checkout_fields', 'add_custom_checkout_field');
+function add_custom_checkout_field($fields): array
+{
+    $fields['billing']['sama_payment_type_f'] = array(
+        'type' => 'text',
+        'label' => __('sama_payment_type_label'),
+        'required' => true,
+        'class' => array('form-row-wide'),
+    );
+    return $fields;
+}
+add_action('woocommerce_checkout_update_order_meta', 'save_custom_checkout_field');
+function save_custom_checkout_field($order_id)
+{
+    if (!empty($_POST['sama_payment_type_f'])) {
+        update_post_meta($order_id, 'sama_payment_type_label', $_POST['sama_payment_type_f']);
     }
 }
-// Hook the custom function to the 'before_woocommerce_init' action
-add_action('before_woocommerce_init', 'declare_sama_cart_checkout_blocks_compatibility');
 
-
-// Hook the custom function to the 'woocommerce_blocks_loaded' action
-add_action( 'woocommerce_blocks_loaded', 'sama_register_order_approval_payment_method_type' );
 
 /**
- * Custom function to register a payment method type
- **/
-function sama_register_order_approval_payment_method_type() {
-    // Check if the required class exists
-    if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
-        return;
-    }
-
-    // Include the custom Blocks Checkout class
-    require_once plugin_dir_path(__FILE__) . 'class-block.php';
-
-    // Hook the registration function to the 'woocommerce_blocks_payment_method_type_registration' action
-    add_action(
-        'woocommerce_blocks_payment_method_type_registration',
-        function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
-            $payment_method_registry->register( new Sama_Gateway_Blocks );
-        }
-    );
-}
-
+ * Static box for choosing sama payment type
+ */
 add_action('wp_footer', 'custom_checkout_button_script');
 function custom_checkout_button_script()
 {
@@ -181,7 +169,6 @@ function custom_checkout_button_script()
 }
 
 add_action('woocommerce_before_checkout_form', 'woo_sama_function', 10);
-
 function woo_sama_function() {
     if (is_checkout()) {
         $sama_plugin_url = WOO_SAMADU;
@@ -336,23 +323,35 @@ function woo_sama_function() {
 }
 
 
-add_filter('woocommerce_checkout_fields', 'add_custom_checkout_field');
-function add_custom_checkout_field($fields): array
-{
-    $fields['billing']['sama_payment_type_f'] = array(
-        'type' => 'text',
-        'label' => __('sama_payment_type_label'),
-        'required' => true,
-        'class' => array('form-row-wide'),
-    );
-    return $fields;
-}
 
-add_action('woocommerce_checkout_update_order_meta', 'save_custom_checkout_field');
-function save_custom_checkout_field($order_id)
-{
-    if (!empty($_POST['sama_payment_type_f'])) {
-        update_post_meta($order_id, 'sama_payment_type_label', $_POST['sama_payment_type_f']);
+/**
+ * Custom function to declare compatibility with cart_checkout_blocks feature
+ */
+add_action('before_woocommerce_init', 'declare_sama_cart_checkout_blocks_compatibility');
+function declare_sama_cart_checkout_blocks_compatibility() {
+    // Check if the required class exists
+    if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        // Declare compatibility for 'cart_checkout_blocks'
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__, true);
     }
 }
 
+/**
+ * Custom function to register a payment method type
+ **/
+add_action( 'woocommerce_blocks_loaded', 'sama_register_order_approval_payment_method_type' );
+function sama_register_order_approval_payment_method_type() {
+    // Check if the required class exists
+    if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+        return;
+    }
+    // Include the custom Blocks Checkout class
+    require_once plugin_dir_path(__FILE__) . 'class-block.php';
+    // Hook the registration function to the 'woocommerce_blocks_payment_method_type_registration' action
+    add_action(
+        'woocommerce_blocks_payment_method_type_registration',
+        function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+            $payment_method_registry->register( new Sama_Gateway_Blocks );
+        }
+    );
+}
