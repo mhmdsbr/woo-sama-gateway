@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "woocommerce-checkout/sama-block",
+  "title": "Sama Block",
+  "description": "Sama Payment type boxes",
+  "category": "woocommerce",
+  "parent": [ "woocommerce/checkout-fields-block" ],
+  "textdomain": "sama",
+  "supports": {
+    "align": ["wide"]
+  },
+  "attributes": {
+    "align": {
+      "type": "string",
+      "default": "wide"
+    },
+    "lock": {
+      "type": "object",
+      "default": {
+        "remove": true,
+        "move": true
+      }
+    },
+    "title" : {
+      "type": "string"
+    }
+  },
+  "editorScript": "file:build/block-sama-gateway.js"
+}
