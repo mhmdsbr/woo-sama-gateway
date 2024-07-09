@@ -1,16 +1,10 @@
-/**
- * WordPress dependencies
- */
 import { registerBlockType } from '@wordpress/blocks';
-
-/**
- * Internal dependencies
- */
+// import edit from './components/edit';
+import save from './components/save';
+import './assets/css/style.css';
 import name from '../block.json';
-import edit from './edit';
-import save from './save';
 
 registerBlockType(name, {
-    edit,
+    // edit,
     save,
 });

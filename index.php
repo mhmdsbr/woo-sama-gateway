@@ -52,7 +52,6 @@ function load_sama_woo_gateway() {
 }
 add_action('plugins_loaded', 'load_sama_woo_gateway', 0);
 
-
 /**
  * Adding check out custom field
  */
@@ -359,30 +358,30 @@ function sama_register_order_approval_payment_method_type() {
 
 
 
-
 //function enqueue_custom_block_assets() {
 //    wp_register_script(
-//        'awp-custom-block',
+//        'sama-custom-block',
 //        plugins_url( 'build/block-sama-gateway.js', __FILE__ ),
 //        array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components' ),
 //        filemtime( plugin_dir_path( __FILE__ ) . 'build/block-sama-gateway.js' )
 //    );
 //
-//    register_block_type( 'awp/custom-block', array(
-//        'editor_script' => 'awp-custom-block',
+//    register_block_type( 'woocommerce/sama-block', array(
+//        'editor_script' => 'sama-block',
 //    ) );
 //}
 //add_action( 'init', 'enqueue_custom_block_assets' );
 
 add_action( 'init', 'sama_custom_block_init' );
 function sama_custom_block_init() {
-    register_block_type_from_metadata( __DIR__ );
+    register_block_type_from_metadata( __DIR__  );
 }
+
 
 add_filter(
     '__experimental_woocommerce_blocks_add_data_attributes_to_namespace',
     function ( $allowed_namespaces ) {
-        $allowed_namespaces[] = 'woocommerce-checkout/sama-block';
+        $allowed_namespaces[] = 'woocommerce';
         return $allowed_namespaces;
     },
     10,
@@ -392,12 +391,28 @@ add_filter(
 //add_filter(
 //    '__experimental_woocommerce_blocks_add_data_attributes_to_block',
 //    function ( $allowed_blocks ) {
-//        $allowed_blocks[] = 'woocommerce-checkout/sama-block';
+//        $allowed_blocks[] = 'woocommerce/checkout-fields-block';
 //        return $allowed_blocks;
 //    },
 //    10,
 //    1
 //);
+
+
+// add new category to block editor
+// Adding a new (custom) block category and show that category at the top
+add_filter( 'block_categories_all', 'example_block_category', 10, 2);
+function example_block_category( $categories, $post ) {
+
+    array_unshift( $categories, array(
+        'slug'	=> 'woocommerce',
+        'title' => 'Woocommerce'
+    ) );
+
+    return $categories;
+}
+
+
 
 function ps_log($message) {
     if (defined('WP_DEBUG') && WP_DEBUG) {
