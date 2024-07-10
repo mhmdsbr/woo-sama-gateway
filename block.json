@@ -4,7 +4,7 @@
   "title": "Sama Block",
   "description": "Sama Payment type boxes",
   "category": "woocommerce",
-  "parent": [ "woocommerce/checkout-fields-block" ],
+  "parent": [ "woocommerce/checkout-block" ],
   "textdomain": "sama",
   "supports": {
     "align": ["wide"]
@@ -21,7 +21,7 @@
         "move": true
       }
     },
-    "customInput": {
+    "sama_payment_type_f": {
       "type": "string",
       "default": ""
     },

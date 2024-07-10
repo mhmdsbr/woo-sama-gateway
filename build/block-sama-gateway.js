@@ -18,22 +18,178 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _assets_images_logo_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../assets/images/logo.png */ "./src/assets/images/logo.png");
+/* harmony import */ var _assets_images_payment_checked_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../assets/images/payment_checked.png */ "./src/assets/images/payment_checked.png");
+/* harmony import */ var _assets_images_remove_icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../assets/images/remove_icon.png */ "./src/assets/images/remove_icon.png");
+/* harmony import */ var _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../assets/images/check.png */ "./src/assets/images/check.png");
+/* harmony import */ var _assets_images_payment_date_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../assets/images/payment_date.png */ "./src/assets/images/payment_date.png");
+
+
+
+
+
 
 
 
 var Edit = function Edit(props) {
   var attributes = props.attributes,
     setAttributes = props.setAttributes;
-  var customInput = attributes.customInput;
-  return /*#__PURE__*/React.createElement("div", (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)(), /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__.TextControl, {
-    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Custom Input', 'sama'),
-    value: customInput,
+  var sama_payment_type_f = attributes.sama_payment_type_f;
+  var blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)();
+  return /*#__PURE__*/React.createElement("div", blockProps, /*#__PURE__*/React.createElement(_wordpress_components__WEBPACK_IMPORTED_MODULE_0__.TextControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Sama Payment Type', 'sama'),
+    value: sama_payment_type_f,
     onChange: function onChange(value) {
       return setAttributes({
-        customInput: value
+        sama_payment_type_f: value
       });
+    },
+    className: "form-row-wide"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "sama_bg_box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_main"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_main_content"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_header_box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "logo_sama"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_logo_png__WEBPACK_IMPORTED_MODULE_3__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "sama_head_title"
+  }, "\u0622\u0633\u0648\u062F\u06AF\u06CC \u062E\u0627\u0637\u0631 \u062F\u0631 \u062E\u0631\u06CC\u062F\u060C \u0627\u0645\u06A9\u0627\u0646 \u067E\u0631\u062F\u0627\u062E\u062A \u062F\u0631 \u0622\u06CC\u0646\u062F\u0647!")), /*#__PURE__*/React.createElement("div", {
+    className: "sama_boxs_holder"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_option",
+    id: "zemanat_payment"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_descriptions"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_title"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_icon"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_payment_checked_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_btn_side"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_button disable_all_and_enable_sama",
+    id: "disable_all_and_enable_sama"
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0642\u062F\u06CC"), /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_button_remove w_en_all",
+    style: {
+      display: 'none'
     }
-  }));
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_remove_icon_png__WEBPACK_IMPORTED_MODULE_5__,
+    alt: ""
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "payment_info_items"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0627\u0645\u06A9\u0627\u0646 \u0628\u0627\u0632\u06AF\u0634\u062A \u06A9\u0627\u0644\u0627 \u062A\u0627 \u06F1\u06F5 \u0631\u0648\u0632 \u067E\u0633 \u0627\u0632 \u062E\u0631\u06CC\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0622\u0646\u06CC \u0648\u062C\u0647 \u062F\u0631\u0635\u0648\u0631\u062A \u0645\u063A\u0627\u06CC\u0631\u062A \u06A9\u0627\u0644\u0627 \u0628\u0627 \u0633\u0641\u0627\u0631\u0634")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0622\u0646\u06CC \u0648\u062C\u0647 \u062F\u0631\u0635\u0648\u0631\u062A \u0627\u0646\u0635\u0631\u0627\u0641 \u0627\u0632 \u062E\u0631\u06CC\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0622\u0646\u06CC \u0648\u062C\u0647 \u062F\u0631\u0635\u0648\u0631\u062A \u0639\u062F\u0645\u200C\u0627\u0631\u0633\u0627\u0644 \u06A9\u0627\u0644\u0627 \u062A\u0648\u0633\u0637 \u0641\u0631\u0648\u0634\u06AF\u0627\u0647"))))), /*#__PURE__*/React.createElement("div", {
+    className: "sama_option",
+    id: "etebari_payment"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_descriptions"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_title"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_icon"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_payment_date_png__WEBPACK_IMPORTED_MODULE_7__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "payment_title_txt"
+  }, "\u067E\u0631\u062F\u0627\u062E\u062A \u0627\u0639\u062A\u0628\u0627\u0631\u06CC \u0633\u0645\u0627"), /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_btn_side"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_button disable_all_and_enable_sama pardakht_etebari"
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u067E\u0631\u062F\u0627\u062E\u062A \u0627\u0639\u062A\u0628\u0627\u0631\u06CC"), /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_button_remove w_en_all",
+    style: {
+      display: 'none'
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_remove_icon_png__WEBPACK_IMPORTED_MODULE_5__,
+    alt: ""
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "payment_info_items"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0645\u0632\u0627\u06CC\u0627\u06CC \u067E\u0631\u062F\u0627\u062E\u062A \u0628\u0627 \u0636\u0645\u0627\u0646\u062A \u0633\u0645\u0627")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0627\u0633\u062A\u0641\u0627\u062F\u0647 \u0633\u0631\u06CC\u0639 \u0648 \u0622\u0633\u0627\u0646 \u0627\u0632 \u0627\u0639\u062A\u0628\u0627\u0631")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0628\u062F\u0648\u0646 \u0646\u06CC\u0627\u0632 \u0628\u0647 \u0686\u06A9\u060C \u0633\u0641\u062A\u0647 \u06CC\u0627 \u0636\u0627\u0645\u0646")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_6__,
+    alt: ""
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0627\u0645\u06A9\u0627\u0646 \u062A\u0633\u0648\u06CC\u0647 \u0627\u0642\u0633\u0627\u0637 \u062F\u0631 \u06F4 \u062A\u0627 \u06F1\u06F2 \u0645\u0627\u0647"))))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Edit);
 
@@ -51,12 +207,170 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _assets_images_logo_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../assets/images/logo.png */ "./src/assets/images/logo.png");
+/* harmony import */ var _assets_images_payment_checked_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../assets/images/payment_checked.png */ "./src/assets/images/payment_checked.png");
+/* harmony import */ var _assets_images_remove_icon_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../assets/images/remove_icon.png */ "./src/assets/images/remove_icon.png");
+/* harmony import */ var _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../assets/images/check.png */ "./src/assets/images/check.png");
+/* harmony import */ var _assets_images_payment_date_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../assets/images/payment_date.png */ "./src/assets/images/payment_date.png");
 
-var Save = function Save(props) {
-  var attributes = props.attributes;
-  var customInput = attributes.customInput;
+
+
+
+
+
+var Save = function Save(_ref) {
+  var attributes = _ref.attributes;
+  var sama_payment_type_f = attributes.sama_payment_type_f;
   var blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_0__.useBlockProps.save();
-  return /*#__PURE__*/React.createElement("div", blockProps, /*#__PURE__*/React.createElement("p", null, customInput));
+  return /*#__PURE__*/React.createElement("div", blockProps, /*#__PURE__*/React.createElement("input", {
+    type: "hidden",
+    value: sama_payment_type_f,
+    className: "sama-payment-type-input"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "sama_bg_box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_main"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_main_content"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_header_box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "logo_sama"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_logo_png__WEBPACK_IMPORTED_MODULE_1__,
+    alt: "Logo"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "sama_head_title"
+  }, "\u0622\u0633\u0648\u062F\u06AF\u06CC \u062E\u0627\u0637\u0631 \u062F\u0631 \u062E\u0631\u06CC\u062F\u060C \u0627\u0645\u06A9\u0627\u0646 \u067E\u0631\u062F\u0627\u062E\u062A \u062F\u0631 \u0622\u06CC\u0646\u062F\u0647!")), /*#__PURE__*/React.createElement("div", {
+    className: "sama_boxs_holder"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_option",
+    id: "zemanat_payment"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_descriptions"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_title"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_icon"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_payment_checked_png__WEBPACK_IMPORTED_MODULE_2__,
+    alt: "Checked"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_btn_side"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_button disable_all_and_enable_sama",
+    id: "disable_all_and_enable_sama"
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u067E\u0631\u062F\u0627\u062E\u062A \u0646\u0642\u062F\u06CC"), /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_button_remove w_en_all",
+    style: {
+      display: 'none'
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_remove_icon_png__WEBPACK_IMPORTED_MODULE_3__,
+    alt: "Remove"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "payment_info_items"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: "Check"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0627\u0645\u06A9\u0627\u0646 \u0628\u0627\u0632\u06AF\u0634\u062A \u06A9\u0627\u0644\u0627 \u062A\u0627 \u06F1\u06F5 \u0631\u0648\u0632 \u067E\u0633 \u0627\u0632 \u062E\u0631\u06CC\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: "Check"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0622\u0646\u06CC \u0648\u062C\u0647 \u062F\u0631\u0635\u0648\u0631\u062A \u0645\u063A\u0627\u06CC\u0631\u062A \u06A9\u0627\u0644\u0627 \u0628\u0627 \u0633\u0641\u0627\u0631\u0634")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: "Check"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0622\u0646\u06CC \u0648\u062C\u0647 \u062F\u0631\u0635\u0648\u0631\u062A \u0627\u0646\u0635\u0631\u0627\u0641 \u0627\u0632 \u062E\u0631\u06CC\u062F")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: "Check"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0628\u0627\u0632\u067E\u0631\u062F\u0627\u062E\u062A \u0622\u0646\u06CC \u0648\u062C\u0647 \u062F\u0631\u0635\u0648\u0631\u062A \u0639\u062F\u0645\u200C\u0627\u0631\u0633\u0627\u0644 \u06A9\u0627\u0644\u0627 \u062A\u0648\u0633\u0637 \u0641\u0631\u0648\u0634\u06AF\u0627\u0647"))))), /*#__PURE__*/React.createElement("div", {
+    className: "sama_option",
+    id: "etebari_payment"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_descriptions"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_title"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_icon"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_payment_date_png__WEBPACK_IMPORTED_MODULE_5__,
+    alt: "Payment Date"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "payment_title_txt"
+  }, "\u067E\u0631\u062F\u0627\u062E\u062A \u0627\u0639\u062A\u0628\u0627\u0631\u06CC \u0633\u0645\u0627"), /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_btn_side"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_button disable_all_and_enable_sama pardakht_etebari"
+  }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u067E\u0631\u062F\u0627\u062E\u062A \u0627\u0639\u062A\u0628\u0627\u0631\u06CC"), /*#__PURE__*/React.createElement("div", {
+    className: "payment_select_button_remove w_en_all",
+    style: {
+      display: 'none'
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_remove_icon_png__WEBPACK_IMPORTED_MODULE_3__,
+    alt: "Remove"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "payment_info_items"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: "Check"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0645\u0632\u0627\u06CC\u0627\u06CC \u067E\u0631\u062F\u0627\u062E\u062A \u0628\u0627 \u0636\u0645\u0627\u0646\u062A \u0633\u0645\u0627")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: "Check"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0627\u0633\u062A\u0641\u0627\u062F\u0647 \u0633\u0631\u06CC\u0639 \u0648 \u0622\u0633\u0627\u0646 \u0627\u0632 \u0627\u0639\u062A\u0628\u0627\u0631")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: "Check"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0628\u062F\u0648\u0646 \u0646\u06CC\u0627\u0632 \u0628\u0647 \u0686\u06A9\u060C \u0633\u0641\u062A\u0647 \u06CC\u0627 \u0636\u0627\u0645\u0646")), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sama_icon_item"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: _assets_images_check_png__WEBPACK_IMPORTED_MODULE_4__,
+    alt: "Check"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "info_item_sama_text"
+  }, "\u0627\u0645\u06A9\u0627\u0646 \u062A\u0633\u0648\u06CC\u0647 \u0627\u0642\u0633\u0627\u0637 \u062F\u0631 \u06F4 \u062A\u0627 \u06F1\u06F2 \u0645\u0627\u0647"))))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Save);
 
@@ -1187,6 +1501,46 @@ module.exports = __webpack_require__.p + "97fa1db82a8c0cd94042.woff";
 
 /***/ }),
 
+/***/ "./src/assets/images/check.png":
+/*!*************************************!*\
+  !*** ./src/assets/images/check.png ***!
+  \*************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "317a3ec5d0e5876e4d65.png";
+
+/***/ }),
+
+/***/ "./src/assets/images/logo.png":
+/*!************************************!*\
+  !*** ./src/assets/images/logo.png ***!
+  \************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "f762308f8f94004a9fbd.png";
+
+/***/ }),
+
+/***/ "./src/assets/images/payment_checked.png":
+/*!***********************************************!*\
+  !*** ./src/assets/images/payment_checked.png ***!
+  \***********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "37cc0a129fd42df3eee6.png";
+
+/***/ }),
+
+/***/ "./src/assets/images/payment_date.png":
+/*!********************************************!*\
+  !*** ./src/assets/images/payment_date.png ***!
+  \********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "a0c33d6d92e20fb59da1.png";
+
+/***/ }),
+
 /***/ "./src/assets/images/plugin-bg.png":
 /*!*****************************************!*\
   !*** ./src/assets/images/plugin-bg.png ***!
@@ -1194,6 +1548,16 @@ module.exports = __webpack_require__.p + "97fa1db82a8c0cd94042.woff";
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = __webpack_require__.p + "d208e35495fd84676947.png";
+
+/***/ }),
+
+/***/ "./src/assets/images/remove_icon.png":
+/*!*******************************************!*\
+  !*** ./src/assets/images/remove_icon.png ***!
+  \*******************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "4acb4a0611f05d1642b3.png";
 
 /***/ }),
 
@@ -1243,7 +1607,7 @@ module.exports = window["wp"]["i18n"];
   \********************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"woocommerce/sama-block","title":"Sama Block","description":"Sama Payment type boxes","category":"woocommerce","parent":["woocommerce/checkout-fields-block"],"textdomain":"sama","supports":{"align":["wide"]},"attributes":{"align":{"type":"string","default":"wide"},"lock":{"type":"object","default":{"remove":true,"move":true}},"customInput":{"type":"string","default":""},"title":{"type":"string"}},"editorScript":"file:build/block-sama-gateway.js","style":"file:src/assets/css/style.css","editorStyle":"src/assets/css/style.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"woocommerce/sama-block","title":"Sama Block","description":"Sama Payment type boxes","category":"woocommerce","parent":["woocommerce/checkout-block"],"textdomain":"sama","supports":{"align":["wide"]},"attributes":{"align":{"type":"string","default":"wide"},"lock":{"type":"object","default":{"remove":true,"move":true}},"sama_payment_type_f":{"type":"string","default":""},"title":{"type":"string"}},"editorScript":"file:build/block-sama-gateway.js","style":"file:src/assets/css/style.css","editorStyle":"src/assets/css/style.css"}');
 
 /***/ })
 
