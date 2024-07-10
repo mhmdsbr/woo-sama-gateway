@@ -358,45 +358,14 @@ function sama_register_order_approval_payment_method_type() {
 
 
 
-//function enqueue_custom_block_assets() {
-//    wp_register_script(
-//        'sama-custom-block',
-//        plugins_url( 'build/block-sama-gateway.js', __FILE__ ),
-//        array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components' ),
-//        filemtime( plugin_dir_path( __FILE__ ) . 'build/block-sama-gateway.js' )
-//    );
-//
-//    register_block_type( 'woocommerce/sama-block', array(
-//        'editor_script' => 'sama-block',
-//    ) );
-//}
-//add_action( 'init', 'enqueue_custom_block_assets' );
-
 add_action( 'init', 'sama_custom_block_init' );
 function sama_custom_block_init() {
-    register_block_type_from_metadata( __DIR__  );
+    register_block_type_from_metadata(__DIR__ );
 }
-
-
-add_filter(
-    '__experimental_woocommerce_blocks_add_data_attributes_to_namespace',
-    function ( $allowed_namespaces ) {
-        $allowed_namespaces[] = 'woocommerce';
-        return $allowed_namespaces;
-    },
-    10,
-    1
-);
-
-//add_filter(
-//    '__experimental_woocommerce_blocks_add_data_attributes_to_block',
-//    function ( $allowed_blocks ) {
-//        $allowed_blocks[] = 'woocommerce/checkout-fields-block';
-//        return $allowed_blocks;
-//    },
-//    10,
-//    1
-//);
+//function new_dynamic_callback( $attributes ): string
+//{
+//    return '<div class="new-dynamic-block">You said:<p>' . $attributes['customInput'] . '.</p></div>';
+//}
 
 
 // add new category to block editor
@@ -411,7 +380,6 @@ function example_block_category( $categories, $post ) {
 
     return $categories;
 }
-
 
 
 function ps_log($message) {
