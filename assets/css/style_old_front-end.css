@@ -174,32 +174,32 @@
 }
 .payment_select_button_remove img{
 	width: 90%;
-    margin: auto;
+	margin: auto;
 }
 
 .payment_select_button_remove {
-    width: 15%;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(217, 217, 217, 1);
+	width: 15%;
+	background: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	border-radius: 8px;
+	border: 1px solid rgba(217, 217, 217, 1);
 	cursor: pointer;
 }
 
 /* this is for themes that use --wp--style--global--content-size for checkout page */
 .woocommerce-checkout .woocommerce{
 	max-width: 1200px;
-} 
+}
 @media only screen and (max-width: 1199px) {
 	.woocommerce-checkout .woocommerce{
 		max-width: 720px;
-	} 
+	}
 }
 @media only screen and (max-width: 700px) {
 	.woocommerce-checkout .woocommerce{
 		max-width: 380px;
-	} 
+	}
 }

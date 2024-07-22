@@ -1,0 +1,1 @@
+{"version":3,"file":"./style-sama-gateway-block.css","mappings":";;;AAAA;EACC;AACD,C","sources":["webpack://sama-gateway/./src/js/sama-gateway-block/style.scss"],"sourcesContent":[".shipping-workshop-other-value input {\r\n\twidth: 100%;\r\n}\r\n"],"names":[],"sourceRoot":""}

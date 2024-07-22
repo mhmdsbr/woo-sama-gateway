@@ -92,7 +92,7 @@ class Sama_Gateway_Blocks_Integration implements IntegrationInterface {
 		$data = [
 			'sama-gateway-active' => true,
 
-			'defaultLabelText'         => __( 'What should we do if you are not at home?', 'sama-gateway' ),
+			'defaultLabelText'    => __( 'What should we do if you are not at home?', 'sama-gateway' ),
 		];
 
 		return $data;
@@ -172,6 +172,6 @@ class Sama_Gateway_Blocks_Integration implements IntegrationInterface {
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG && file_exists( $file ) ) {
 			return filemtime( $file );
 		}
-		return SHIPPING_WORKSHOP_VERSION;
+		return SAMA_GATEWAY_VERSION;
 	}
 }

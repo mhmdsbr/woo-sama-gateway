@@ -28,22 +28,22 @@ class Sama_Gateway_Extend_Woo_Core {
 	 *
 	 * @return array Registered schema.
 	 */
-    public static function extend_checkout_schema() {
+	public static function extend_checkout_schema() {
 
-        return [
-            'samaGatewayInputField' => [
-                'description' => 'Adds a Custom Input',
-                'type'        => 'string',
-                'context'     => [ 'view', 'edit' ],
-                'readonly'    => true,
-                'arg_options' => [
-                    'validate_callback' => function( $value ) {
-                        return is_string( $value );
-                    },
-                ],
-            ],
-        ];
-    }
+		return [
+			'samaGatewayInputField' => [
+				'description' => 'Adds a Custom Input',
+				'type'        => 'string',
+				'context'     => [ 'view', 'edit' ],
+				'readonly'    => true,
+				'arg_options' => [
+					'validate_callback' => function( $value ) {
+						return is_string( $value );
+					},
+				],
+			],
+		];
+	}
 
 
 	/**
@@ -64,16 +64,18 @@ class Sama_Gateway_Extend_Woo_Core {
 			2
 		);
 
-
-		add_action('woocommerce_store_api_checkout_update_order_meta',
-			function( \WC_Order $order) {
+		add_action(
+			'woocommerce_store_api_checkout_update_order_meta',
+			function( \WC_Order $order ) {
 				$alternate1 = $order->get_meta( 'shipping_workshop_alternate_shipping_instruction' );
-				$orderID = $order->get_id();
+				$orderID    = $order->get_id();
 
-				update_post_meta($orderID, 'sama_payment_type_label', $alternate1 );
+				update_post_meta( $orderID, 'sama_payment_type_label', $alternate1 );
 				$order->save();
 			},
-			10, 1);
+			10,
+			1
+		);
 	}
 
 

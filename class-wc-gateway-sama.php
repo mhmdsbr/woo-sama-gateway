@@ -1,549 +1,546 @@
 <?php
-if(!defined('ABSPATH'))exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-if( class_exists('WC_Payment_Gateway') && !class_exists('WC_sama') ){
-	class WC_sama extends WC_Payment_Gateway{
+if ( class_exists( 'WC_Payment_Gateway' ) && ! class_exists( 'WC_sama' ) ) {
+	class WC_sama extends WC_Payment_Gateway {
 
-        /**
-         * Plugin Identifier, unique to each plugin.
-         *
-         * @var string
-         */
+		/**
+		 * Plugin Identifier, unique to each plugin.
+		 *
+		 * @var string
+		 */
 
-        private $api_key;
-        private $failedMassage;
-        private $successMassage;
+		private $api_key;
+		private $failedMassage;
+		private $successMassage;
 
-        public function __construct()
-        {
+		public function __construct() {
+			$this->id                 = 'WC_sama';
+			$this->method_title       = __( 'درگاه پرداخت سما', 'woocommerce' );
+			$this->method_description = __( 'تنظیمات درگاه پرداخت سما برای افزونه فروشگاه ساز ووکامرس', 'woocommerce' );
+			$this->icon               = apply_filters( 'woo_sama_logo', WOO_SAMADU . '/assets/images/logo.png' );
+			$this->has_fields         = false;
 
-            $this->id = 'WC_sama';
-            $this->method_title = __('درگاه پرداخت سما', 'woocommerce');
-            $this->method_description = __('تنظیمات درگاه پرداخت سما برای افزونه فروشگاه ساز ووکامرس', 'woocommerce');
-            $this->icon = apply_filters('woo_sama_logo', WOO_SAMADU.'/assets/images/logo.png');
-            $this->has_fields = false;
+			$this->init_form_fields();
+			$this->init_settings();
 
-            $this->init_form_fields();
-            $this->init_settings();
+			$this->title       = $this->settings['title'];
+			$this->description = $this->settings['description'];
 
-            $this->title = $this->settings['title'];
-            $this->description = $this->settings['description'];
+			$this->api_key = $this->settings['api_key'];
 
+			$this->successMassage = $this->settings['success_massage'];
+			$this->failedMassage  = $this->settings['failed_massage'];
 
-            $this->api_key = $this->settings['api_key'];
+			if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '>=' ) ) {
+				add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+			} else {
+				add_action( 'woocommerce_update_options_payment_gateways', array( $this, 'process_admin_options' ) );
+			}
 
-            $this->successMassage = $this->settings['success_massage'];
-            $this->failedMassage = $this->settings['failed_massage'];
+			add_action( 'woocommerce_receipt_' . $this->id . '', array( $this, 'Send_to_sama_Gateway' ) );
+			add_action( 'woocommerce_api_' . strtolower( get_class( $this ) ) . '', array( $this, 'Return_from_sama_Gateway' ) );
+		}
 
-            if (version_compare(WOOCOMMERCE_VERSION, '2.0.0', '>='))
-                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-            else
-                add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
-
-            add_action('woocommerce_receipt_' . $this->id . '', array($this, 'Send_to_sama_Gateway'));
-            add_action('woocommerce_api_' . strtolower(get_class($this)) . '', array($this, 'Return_from_sama_Gateway'));
-        }
-
-		public function admin_options(){
+		public function admin_options() {
 			parent::admin_options();
 		}
 
-        public function init_form_fields()
-        {
-            $this->form_fields = apply_filters(
-                'WC_sama_Config',
-                array(
-                    'base_config' => array(
-                        'title' => __('تنظیمات پایه ای', 'woocommerce'),
-                        'type' => 'title',
-                        'description' => '',
-                    ),
-                    'enabled' => array(
-                        'title' => __('فعالسازی/غیرفعالسازی', 'woocommerce'),
-                        'type' => 'checkbox',
-                        'label' => __('فعالسازی درگاه سما', 'woocommerce'),
-                        'description' => __('برای فعالسازی درگاه پرداخت سما باید چک باکس را تیک بزنید', 'woocommerce'),
-                        'default' => 'yes',
-                        'desc_tip' => true,
-                    ),
-                    'title' => array(
-                        'title' => __('عنوان درگاه', 'woocommerce'),
-                        'type' => 'text',
-                        'description' => __('عنوان درگاه که در طی خرید به مشتری نمایش داده میشود', 'woocommerce'),
-                        'default' => __('درگاه پرداخت سما', 'woocommerce'),
-                        'desc_tip' => true,
-                    ),
-                    'description' => array(
-                        'title' => __('توضیحات درگاه', 'woocommerce'),
-                        'type' => 'text',
-                        'desc_tip' => true,
-                        'description' => __('توضیحاتی که در طی عملیات پرداخت برای درگاه نمایش داده خواهد شد', 'woocommerce'),
-                        'default' => __('پرداخت امن به وسیله کلیه کارت های عضو شتاب از طریق درگاه سما', 'woocommerce')
-                    ),
-                    'account_config' => array(
-                        'title' => __('تنظیمات حساب سما', 'woocommerce'),
-                        'type' => 'title',
-                        'description' => '',
-                    ),
-                    'api_key' => array(
-                        'title' => __('کلید API', 'woocommerce'),
-                        'type' => 'text',
-                        'description' => __('مرچنت کد درگاه سما', 'woocommerce'),
-                        'default' => '',
-                        'desc_tip' => true
-                    ),
-                    'payment_config' => array(
-                        'title' => __('تنظیمات عملیات پرداخت', 'woocommerce'),
-                        'type' => 'title',
-                        'description' => '',
-                    ),
-                    'success_massage' => array(
-                        'title' => __('پیام پرداخت موفق', 'woocommerce'),
-                        'type' => 'textarea',
-                        'description' => __('متن پیامی که میخواهید بعد از پرداخت موفق به کاربر نمایش دهید را وارد نمایید . همچنین می توانید از شورت کد {transaction_id} برای نمایش کد رهگیری (توکن) سما استفاده نمایید .', 'woocommerce'),
-                        'default' => __('با تشکر از شما . سفارش شما با موفقیت پرداخت شد .', 'woocommerce'),
-                    ),
-                    'failed_massage' => array(
-                        'title' => __('پیام پرداخت ناموفق', 'woocommerce'),
-                        'type' => 'textarea',
-                        'description' => __('متن پیامی که میخواهید بعد از پرداخت ناموفق به کاربر نمایش دهید را وارد نمایید . همچنین می توانید از شورت کد {fault} برای نمایش دلیل خطای رخ داده استفاده نمایید . این دلیل خطا از سایت سما ارسال میگردد .', 'woocommerce'),
-                        'default' => __('پرداخت شما ناموفق بوده است . لطفا مجددا تلاش نمایید یا در صورت بروز اشکال با مدیر سایت تماس بگیرید .', 'woocommerce'),
-                    ),
-                )
-            );
-        }
+		public function init_form_fields() {
+			$this->form_fields = apply_filters(
+				'WC_sama_Config',
+				array(
+					'base_config'     => array(
+						'title'       => __( 'تنظیمات پایه ای', 'woocommerce' ),
+						'type'        => 'title',
+						'description' => '',
+					),
+					'enabled'         => array(
+						'title'       => __( 'فعالسازی/غیرفعالسازی', 'woocommerce' ),
+						'type'        => 'checkbox',
+						'label'       => __( 'فعالسازی درگاه سما', 'woocommerce' ),
+						'description' => __( 'برای فعالسازی درگاه پرداخت سما باید چک باکس را تیک بزنید', 'woocommerce' ),
+						'default'     => 'yes',
+						'desc_tip'    => true,
+					),
+					'title'           => array(
+						'title'       => __( 'عنوان درگاه', 'woocommerce' ),
+						'type'        => 'text',
+						'description' => __( 'عنوان درگاه که در طی خرید به مشتری نمایش داده میشود', 'woocommerce' ),
+						'default'     => __( 'درگاه پرداخت سما', 'woocommerce' ),
+						'desc_tip'    => true,
+					),
+					'description'     => array(
+						'title'       => __( 'توضیحات درگاه', 'woocommerce' ),
+						'type'        => 'text',
+						'desc_tip'    => true,
+						'description' => __( 'توضیحاتی که در طی عملیات پرداخت برای درگاه نمایش داده خواهد شد', 'woocommerce' ),
+						'default'     => __( 'پرداخت امن به وسیله کلیه کارت های عضو شتاب از طریق درگاه سما', 'woocommerce' ),
+					),
+					'account_config'  => array(
+						'title'       => __( 'تنظیمات حساب سما', 'woocommerce' ),
+						'type'        => 'title',
+						'description' => '',
+					),
+					'api_key'         => array(
+						'title'       => __( 'کلید API', 'woocommerce' ),
+						'type'        => 'text',
+						'description' => __( 'مرچنت کد درگاه سما', 'woocommerce' ),
+						'default'     => '',
+						'desc_tip'    => true,
+					),
+					'payment_config'  => array(
+						'title'       => __( 'تنظیمات عملیات پرداخت', 'woocommerce' ),
+						'type'        => 'title',
+						'description' => '',
+					),
+					'success_massage' => array(
+						'title'       => __( 'پیام پرداخت موفق', 'woocommerce' ),
+						'type'        => 'textarea',
+						'description' => __( 'متن پیامی که میخواهید بعد از پرداخت موفق به کاربر نمایش دهید را وارد نمایید . همچنین می توانید از شورت کد {transaction_id} برای نمایش کد رهگیری (توکن) سما استفاده نمایید .', 'woocommerce' ),
+						'default'     => __( 'با تشکر از شما . سفارش شما با موفقیت پرداخت شد .', 'woocommerce' ),
+					),
+					'failed_massage'  => array(
+						'title'       => __( 'پیام پرداخت ناموفق', 'woocommerce' ),
+						'type'        => 'textarea',
+						'description' => __( 'متن پیامی که میخواهید بعد از پرداخت ناموفق به کاربر نمایش دهید را وارد نمایید . همچنین می توانید از شورت کد {fault} برای نمایش دلیل خطای رخ داده استفاده نمایید . این دلیل خطا از سایت سما ارسال میگردد .', 'woocommerce' ),
+						'default'     => __( 'پرداخت شما ناموفق بوده است . لطفا مجددا تلاش نمایید یا در صورت بروز اشکال با مدیر سایت تماس بگیرید .', 'woocommerce' ),
+					),
+				)
+			);
+		}
 
-		public function process_payment($order_id){
-			$order = new WC_Order($order_id);
+		public function process_payment( $order_id ) {
+			$order = new WC_Order( $order_id );
 			return array(
-				'result' => 'success',
-				'redirect' => $order->get_checkout_payment_url(true)
+				'result'   => 'success',
+				'redirect' => $order->get_checkout_payment_url( true ),
 			);
 		}
 
 
-        function isJson($string) {
-            json_decode($string);
-			return (json_last_error() == JSON_ERROR_NONE);
+		function isJson( $string ) {
+			json_decode( $string );
+			return ( json_last_error() == JSON_ERROR_NONE );
 		}
 
-        /**
-         * @param $action (PaymentRequest, )
-         * @param $params string
-         *
-         * @return mixed
-         */
-        public function SendRequestToSama($action, $params)
-        {
-//            ps_log($action);
-//            ps_log($params);
-//            $sama_payment_type_f_name = sanitize_text_field($_POST['sama_payment_type_f_name']);
-//            ps_log($_POST);
-//            ps_log($_REQUEST);
-            try {
-                $ch = curl_init('https://app.sama.ir/api/stores/services/deposits/' . $action . '/');
-                curl_setopt($ch, CURLOPT_USERAGENT, 'Sama Rest Api v1');
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt(
-                    $ch,
-                    CURLOPT_HTTPHEADER,
-                    array(
-                        'Content-Type: application/json',
-                        'Content-Length: ' . strlen($params),
-                        'Authorization: Api-Key ' . $this->api_key
-                    )
-                );
-                $result = curl_exec($ch);
-                return json_decode($result, true);
-            } catch (Exception $ex) {
-                return false;
-            }
-        }
+		/**
+		 * @param $action (PaymentRequest, )
+		 * @param $params string
+		 *
+		 * @return mixed
+		 */
+		public function SendRequestToSama( $action, $params ) {
+			 // ps_log($action);
+			// ps_log($params);
+			// $sama_payment_type_f_name = sanitize_text_field($_POST['sama_payment_type_f_name']);
+			// ps_log($_POST);
+			// ps_log($_REQUEST);
+			try {
+				$ch = curl_init( 'https://app.sama.ir/api/stores/services/deposits/' . $action . '/' );
+				curl_setopt( $ch, CURLOPT_USERAGENT, 'Sama Rest Api v1' );
+				curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'POST' );
+				curl_setopt( $ch, CURLOPT_POSTFIELDS, $params );
+				curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+				curl_setopt(
+					$ch,
+					CURLOPT_HTTPHEADER,
+					array(
+						'Content-Type: application/json',
+						'Content-Length: ' . strlen( $params ),
+						'Authorization: Api-Key ' . $this->api_key,
+					)
+				);
+				$result = curl_exec( $ch );
+				return json_decode( $result, true );
+			} catch ( Exception $ex ) {
+				return false;
+			}
+		}
 
-		public function Send_to_sama_Gateway($order_id){
+		public function Send_to_sama_Gateway( $order_id ) {
 
-            global $woocommerce;
-            $woocommerce->session->order_id_Sama = $order_id;
-            $order = new WC_Order($order_id);
-            $currency = $order->get_currency();
-            $currency = apply_filters('WC_Samaplugin_Currency', $currency, $order_id);
+			global $woocommerce;
+			$woocommerce->session->order_id_Sama = $order_id;
+			$order                               = new WC_Order( $order_id );
+			$currency                            = $order->get_currency();
+			$currency                            = apply_filters( 'WC_Samaplugin_Currency', $currency, $order_id );
 
-
-            $form = '<form action="" method="POST" class="Sama-checkout-form" id="Sama-checkout-form">
-						<input type="submit" name="Sama_submit" class="button alt" id="Sama-payment-button" value="' . __('پرداخت', 'woocommerce') . '"/>
-						<a class="button cancel" href="' . wc_get_checkout_url() . '">' . __('بازگشت', 'woocommerce') . '</a>
+			$form = '<form action="" method="POST" class="Sama-checkout-form" id="Sama-checkout-form">
+						<input type="submit" name="Sama_submit" class="button alt" id="Sama-payment-button" value="' . __( 'پرداخت', 'woocommerce' ) . '"/>
+						<a class="button cancel" href="' . wc_get_checkout_url() . '">' . __( 'بازگشت', 'woocommerce' ) . '</a>
 					 </form><br/>';
-            $form = apply_filters('WC_Samaplugin_Form', $form, $order_id, $woocommerce);
+			$form = apply_filters( 'WC_Samaplugin_Form', $form, $order_id, $woocommerce );
 
-            do_action('WC_Samaplugin_Gateway_Before_Form', $order_id, $woocommerce);
-            echo wp_kses(
-                $form,
-                array(
-                    'form' => array('action', 'method', 'class', 'id'),
-                    'input' => array('type', 'name', 'class', 'id', 'value'),
-                    'a' => array('class', 'href')
+			do_action( 'WC_Samaplugin_Gateway_Before_Form', $order_id, $woocommerce );
+			echo wp_kses(
+				$form,
+				array(
+					'form'  => array( 'action', 'method', 'class', 'id' ),
+					'input' => array( 'type', 'name', 'class', 'id', 'value' ),
+					'a'     => array( 'class', 'href' ),
 
-                )
-            );
-            do_action('WC_Samaplugin_Gateway_After_Form', $order_id, $woocommerce);
+				)
+			);
+			do_action( 'WC_Samaplugin_Gateway_After_Form', $order_id, $woocommerce );
 
+			$Amount             = intval( $order->get_total() );
+			$Amount             = apply_filters( 'woocommerce_order_amount_total_IRANIAN_gateways_before_check_currency', $Amount, $currency );
+			$strToLowerCurrency = strtolower( $currency );
 
-            $Amount = intval($order->get_total());
-            $Amount = apply_filters('woocommerce_order_amount_total_IRANIAN_gateways_before_check_currency', $Amount, $currency);
-            $strToLowerCurrency = strtolower($currency);
+			if ( strtolower( $currency ) === strtolower( 'IRHT' ) ) {
+				$Amount *= 1000;
+			} elseif ( strtolower( $currency ) === strtolower( 'IRHR' ) ) {
+				$Amount *= 100;
+			}
 
-            if (strtolower($currency) === strtolower('IRHT')) {
-                $Amount *= 1000;
-            } else if (strtolower($currency) === strtolower('IRHR')) {
-                $Amount *= 100;
-            }
+			$Amount = apply_filters( 'woocommerce_order_amount_total_IRANIAN_gateways_after_check_currency', $Amount, $currency );
+			$Amount = apply_filters( 'woocommerce_order_amount_total_IRANIAN_gateways_irt', $Amount, $currency );
+			$Amount = apply_filters( 'woocommerce_order_amount_total_Sama_gateway', $Amount, $currency );
 
+			$CallbackUrl = add_query_arg( 'wc_order', $order_id, WC()->api_request_url( 'WC_Samaplugin' ) );
 
-            $Amount = apply_filters('woocommerce_order_amount_total_IRANIAN_gateways_after_check_currency', $Amount, $currency);
-            $Amount = apply_filters('woocommerce_order_amount_total_IRANIAN_gateways_irt', $Amount, $currency);
-            $Amount = apply_filters('woocommerce_order_amount_total_Sama_gateway', $Amount, $currency);
+			$products    = array();
+			$order_items = $order->get_items();
+			foreach ( $order_items as $product ) {
+				$products[] = $product['name'] . ' (' . $product['qty'] . ') ';
+			}
+			$products    = implode( ' - ', $products );
+			$client_id   = sha1(
+				$order->get_customer_id() .
+				'_' .
+				$order_id .
+				'_' .
+				$Amount .
+				'_' .
+				time()
+			);
+			$Description = 'خرید به شماره سفارش : ' . $order->get_order_number() . ' | خریدار : ' . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+			$Mobile      = $order->get_billing_phone();
+			$Email       = $order->get_billing_email();
+			$Payer       = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+			$ResNumber   = (int) $order->get_order_number();
 
-            $CallbackUrl = add_query_arg('wc_order', $order_id, WC()->api_request_url('WC_Samaplugin'));
+			// Hooks for iranian developer
+			$Description = apply_filters( 'WC_Samaplugin_Description', $Description, $order_id );
+			$Mobile      = apply_filters( 'WC_Samaplugin_Mobile', $Mobile, $order_id );
 
-            $products = array();
-            $order_items = $order->get_items();
-            foreach ($order_items as $product) {
-                $products[] = $product['name'] . ' (' . $product['qty'] . ') ';
-            }
-            $products = implode(' - ', $products);
-            $client_id = sha1(
-                $order->get_customer_id() .
-                '_' .
-                $order_id .
-                '_' .
-                $Amount .
-                '_' .
-                time()
-            );
-            $Description = 'خرید به شماره سفارش : ' . $order->get_order_number() . ' | خریدار : ' . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
-            $Mobile = $order->get_billing_phone();
-            $Email = $order->get_billing_email();
-            $Payer = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
-            $ResNumber = (int) $order->get_order_number();
+			$Email     = apply_filters( 'WC_Samaplugin_Email', $Email, $order_id );
+			$Payer     = apply_filters( 'WC_Samaplugin_Paymenter', $Payer, $order_id );
+			$ResNumber = apply_filters( 'WC_Samaplugin_ResNumber', $ResNumber, $order_id );
+			do_action( 'WC_Samaplugin_Gateway_Payment', $order_id, $Description, $Mobile );
+			$Email                     = ! filter_var( $Email, FILTER_VALIDATE_EMAIL ) === false ? $Email : '';
+			$sama_payment_type_f_value = get_post_meta( $order_id, 'sama_payment_type_label', true );
+			// if == 1 it means that user selected پرداخت اقساطی and else will return nothing, we will use it in curl data.
+			echo 'input data is : ' . $sama_payment_type_f_value . '<br>';
 
-            //Hooks for iranian developer
-            $Description = apply_filters('WC_Samaplugin_Description', $Description, $order_id);
-            $Mobile = apply_filters('WC_Samaplugin_Mobile', $Mobile, $order_id);
+			if ( preg_match( '/^(\+989|989|\+9809|9809)([0-9]{9})$/i', $Mobile, $matches ) ) {
+				$Mobile = '09' . $matches[2];
+			} elseif ( preg_match( '/^9[0-7]{1}[0-9]{8}$/i', $Mobile ) ) {
+				$Mobile = preg_replace( '/^9/', '0$0', $Mobile );
+			} else {
+				$Mobile = preg_match( '/^09[0-7]{1}[0-9]{8}$/i', $Mobile ) ? $Mobile : '';
+			}
 
-            $Email = apply_filters('WC_Samaplugin_Email', $Email, $order_id);
-            $Payer = apply_filters('WC_Samaplugin_Paymenter', $Payer, $order_id);
-            $ResNumber = apply_filters('WC_Samaplugin_ResNumber', $ResNumber, $order_id);
-            do_action('WC_Samaplugin_Gateway_Payment', $order_id, $Description, $Mobile);
-            $Email = !filter_var($Email, FILTER_VALIDATE_EMAIL) === false ? $Email : '';
-            $sama_payment_type_f_value = get_post_meta($order_id, 'sama_payment_type_label', true);
-            // if == 1 it means that user selected پرداخت اقساطی and else will return nothing, we will use it in curl data.
-            echo "input data is : " . $sama_payment_type_f_value . "<br>";
+			if ( strtolower( $currency ) === strtolower( 'IRR' ) ) {
 
-            if (preg_match('/^(\+989|989|\+9809|9809)([0-9]{9})$/i', $Mobile, $matches)) {
-                $Mobile = '09' . $matches[2];
-            } elseif (preg_match('/^9[0-7]{1}[0-9]{8}$/i', $Mobile)) {
-                $Mobile = preg_replace('/^9/', '0$0', $Mobile);
-            } else {
-                $Mobile = preg_match('/^09[0-7]{1}[0-9]{8}$/i', $Mobile) ? $Mobile : '';
-            }
+				$data = array(
+					'price'        => $Amount,
+					'client_id'    => $client_id,
+					'callback_url' => $CallbackUrl . '&client_id=' . $client_id,
+					'description'  => $Description,
+					'currency'     => 'IRR',
+					'metadata'     => [ 'order_id' => "سفارش شماره $order_id" ],
+				);
+				if ( $sama_payment_type_f_value == 'pardakht_etebari' ) {
+					$data['payment_type'] = 'installment';
+				}
+				if ( $Mobile ) {
+					$data['buyer_phone'] = $Mobile;
+				}
+				if ( $Email ) {
+					$data['metadata']['email'] = $Email;
+				}
+			} elseif (
+				( $strToLowerCurrency === strtolower( 'IRT' ) ) ||
+				( $strToLowerCurrency === strtolower( 'TOMAN' ) ) ||
+				$strToLowerCurrency === strtolower( 'Iran TOMAN' ) ||
+				$strToLowerCurrency === strtolower( 'Iranian TOMAN' ) ||
+				$strToLowerCurrency === strtolower( 'Iran-TOMAN' ) ||
+				$strToLowerCurrency === strtolower( 'Iranian-TOMAN' ) ||
+				$strToLowerCurrency === strtolower( 'Iran_TOMAN' ) ||
+				$strToLowerCurrency === strtolower( 'Iranian_TOMAN' ) ||
+				$strToLowerCurrency === strtolower( 'IRHT' ) ||
+				$strToLowerCurrency === strtolower( 'تومان' ) ||
+				$strToLowerCurrency === strtolower( 'IRHR' ) ||
+				$strToLowerCurrency === strtolower(
+					'تومان ایران'
+				)
+			) {
+				$data = array(
+					'price'        => $Amount,
+					'client_id'    => $client_id,
+					'callback_url' => $CallbackUrl . '&client_id=' . $client_id,
+					'description'  => $Description,
+					'currency'     => 'IRT',
+					'metadata'     => [ 'order_id' => "سفارش شماره $order_id" ],
+				);
+				if ( $sama_payment_type_f_value == 'pardakht_etebari' ) {
+					$data['payment_type'] = 'installment';
+				}
+				if ( $Mobile ) {
+					$data['buyer_phone'] = $Mobile;
+				}
+				if ( $Email ) {
+					$data['metadata']['email'] = $Email;
+				}
+			}
+			$result = $this->SendRequestToSama( 'guaranteed', json_encode( $data ) );
+			// $result = false;
+			/*
+			if($sama_payment_type_f_value == "pardakht_zemanati"){
+				echo "پرداخت قسطی انتخاب شده است";
+			}else{
+				echo "پرداخت قسطی انتخاب نشده است";
+			}*/
+			// echo "posted info are : ";
+			// print_r($_POST);
+			// echo "call back is : ";
+			// echo $CallbackUrl;
 
-            if (strtolower($currency) === strtolower('IRR')) {
+			if ( $result === false ) {
+				echo esc_html( 'cURL Error #:' );
+			} elseif ( isset( $result['uid'] ) ) {
+				header( 'Location: ' . $result['web_view_link'] );
+				exit;
+			} else {
 
-                $data = array(
-                    'price' => $Amount,
-                    'client_id' => $client_id,
-                    'callback_url' => $CallbackUrl."&client_id=".$client_id,
-                    'description' => $Description,
-                    "currency" => "IRR",
-                    "metadata" => ["order_id" => "سفارش شماره $order_id"]
-                );
-                if ($sama_payment_type_f_value == "pardakht_etebari") {
-                    $data['payment_type'] = "installment";
-                }
-                if ($Mobile) {
-                    $data['buyer_phone'] = $Mobile;
-                }
-                if ($Email) {
-                    $data['metadata']["email"] = $Email;
-                }
-            } else if (
-                ($strToLowerCurrency === strtolower('IRT')) ||
-                ($strToLowerCurrency === strtolower('TOMAN')) ||
-                $strToLowerCurrency === strtolower('Iran TOMAN') ||
-                $strToLowerCurrency === strtolower('Iranian TOMAN') ||
-                $strToLowerCurrency === strtolower('Iran-TOMAN') ||
-                $strToLowerCurrency === strtolower('Iranian-TOMAN') ||
-                $strToLowerCurrency === strtolower('Iran_TOMAN') ||
-                $strToLowerCurrency === strtolower('Iranian_TOMAN') ||
-                $strToLowerCurrency === strtolower('IRHT') ||
-                $strToLowerCurrency === strtolower('تومان') ||
-                $strToLowerCurrency === strtolower('IRHR') ||
-                $strToLowerCurrency === strtolower(
-                    'تومان ایران'
-                )
-            ) {
-                $data = array(
-                    'price' => $Amount,
-                    'client_id' => $client_id,
-                    'callback_url' => $CallbackUrl."&client_id=".$client_id,
-                    'description' => $Description,
-                    "currency" => "IRT",
-                    "metadata" => ["order_id" => "سفارش شماره $order_id"]
-                );
-                if ($sama_payment_type_f_value == "pardakht_etebari") {
-                    $data['payment_type'] = "installment";
-                }
-                if ($Mobile) {
-                    $data['buyer_phone'] = $Mobile;
-                }
-                if ($Email) {
-                    $data['metadata']["email"] = $Email;
-                }
-            }
-            $result = $this->SendRequestToSama('guaranteed', json_encode($data));
-            //$result = false;
-            /*if($sama_payment_type_f_value == "pardakht_zemanati"){
-                echo "پرداخت قسطی انتخاب شده است";
-            }else{
-                echo "پرداخت قسطی انتخاب نشده است";
-            }*/
-            // echo "posted info are : ";
-            // print_r($_POST);
-            // echo "call back is : ";
-            // echo $CallbackUrl;
+				$Message = ' تراکنش ناموفق بود- کد خطا : ' . $result['errors']['code'];
 
-            if ($result === false) {
-                echo esc_html('cURL Error #:');
-            } else if (isset($result['uid'])) {
-                header('Location: ' . $result['web_view_link']);
-                exit;
-            } else {
+				$Fault = '';
+			}
 
-                $Message = ' تراکنش ناموفق بود- کد خطا : ' . $result['errors']['code'];
+			if ( ! empty( $Message ) && $Message ) {
 
-                $Fault = '';
-            }
+				$Note = sprintf( __( 'خطا در هنگام ارسال به بانک : %s', 'woocommerce' ), $Message );
+				$Note = apply_filters( 'WC_Samaplugin_Send_to_Gateway_Failed_Note', $Note, $order_id, $Fault );
+				$order->add_order_note( $Note );
 
-            if (!empty($Message) && $Message) {
+				$Notice = sprintf( __( 'در هنگام اتصال به بانک خطای زیر رخ داده است : <br/>%s', 'woocommerce' ), $Message );
+				$Notice = apply_filters( 'WC_Samaplugin_Send_to_Gateway_Failed_Notice', $Notice, $order_id, $Fault );
+				if ( $Notice ) {
+					wc_add_notice( $Notice, 'error' );
+				}
 
-                $Note = sprintf(__('خطا در هنگام ارسال به بانک : %s', 'woocommerce'), $Message);
-                $Note = apply_filters('WC_Samaplugin_Send_to_Gateway_Failed_Note', $Note, $order_id, $Fault);
-                $order->add_order_note($Note);
+				do_action( 'WC_Samaplugin_Send_to_Gateway_Failed', $order_id, $Fault );
+			}
 
-
-                $Notice = sprintf(__('در هنگام اتصال به بانک خطای زیر رخ داده است : <br/>%s', 'woocommerce'), $Message);
-                $Notice = apply_filters('WC_Samaplugin_Send_to_Gateway_Failed_Notice', $Notice, $order_id, $Fault);
-                if ($Notice) {
-                    wc_add_notice($Notice, 'error');
-                }
-
-                do_action('WC_Samaplugin_Send_to_Gateway_Failed', $order_id, $Fault);
-            }
-
-        }
-
-        public function Return_from_sama_Gateway(){
-            $client_id = $_GET["client_id"];
-
-            global $woocommerce;
-
-
-            if (isset($_GET['wc_order'])) {
-                $order_id = sanitize_text_field($_GET['wc_order']);
-            }
-
-            if ($order_id) {
-
-                $order = new WC_Order($order_id);
-                $currency = $order->get_currency();
-                $currency = apply_filters('WC_Samaplugin_Currency', $currency, $order_id);
-
-                if ($order->status !== 'completed') {
-
-                    $api_key = $this->api_key;
-
-                    if (isset($client_id)) {
-
-                        $MerchantID = $this->api_key;
-                        $Amount = intval($order->get_total());
-                        $Amount = apply_filters('woocommerce_order_amount_total_IRANIAN_gateways_before_check_currency', $Amount, $currency);
-                        $strToLowerCurrency = strtolower($currency);
-                        if (
-                            ($strToLowerCurrency === strtolower('IRT')) ||
-                            ($strToLowerCurrency === strtolower('TOMAN')) ||
-                            $strToLowerCurrency === strtolower('Iran TOMAN') ||
-                            $strToLowerCurrency === strtolower('Iranian TOMAN') ||
-                            $strToLowerCurrency === strtolower('Iran-TOMAN') ||
-                            $strToLowerCurrency === strtolower('Iranian-TOMAN') ||
-                            $strToLowerCurrency === strtolower('Iran_TOMAN') ||
-                            $strToLowerCurrency === strtolower('Iranian_TOMAN') ||
-                            $strToLowerCurrency === strtolower('IRHT') ||
-                            $strToLowerCurrency === strtolower('تومان') ||
-                            $strToLowerCurrency === strtolower('IRHR') ||
-                            $strToLowerCurrency === strtolower(
-                                'تومان ایران'
-                            )
-                        ) if (strtolower($currency) === strtolower('IRHT')) {
-                            $Amount *= 1000;
-                        } else if (strtolower($currency) === strtolower('IRHR')) {
-                            $Amount *= 100;
-                        }
-                        //else if (strtolower($currency) === strtolower('IRR')) {
-                        //$Amount /= 10;
-                        //}
-
-                        $Authority = sanitize_text_field($_GET['Authority']);
-
-                        $request_id = $_GET['request_id'];
-                        $data = array("client_id" => $client_id, "request_id" => $request_id);
-                        $result = $this->SendRequestToSama('guaranteed/payment/verify', json_encode($data));
-
-                        if ($result['payment']['is_failed'] == false && $result['is_paid'] == true && $result['payment']['result_code'] == 0) {
-                            $Status = 'completed';
-                            $Transaction_ID = $result['payment']['id'];
-                            $Fault = '';
-                            $Message = '';
-
-                        } elseif ($result['code'] == 101) {
-                            // این حلقه اتفاق نخواهد افتاد و در حال حاضر قابلیت تایید درخواست تکراری توسط ای پی آی وجود ندارد اما برای آپدیت های بعدی قابل استفاده است
-                            $Message = 'این تراکنش قلا تایید شده است';
-                            $Transaction_ID = $result['payment']['id'];
-                            $Notice = wpautop(wptexturize($Message));
-                            wp_redirect(add_query_arg('wc_status', 'success', $this->get_return_url($order)));
-                            exit;
-                        } else {
-                            $Status = 'failed';
-                            $Fault = $result['errors']['code'];
-                            $Message = 'تراکنش ناموفق بود';
-                        }
-                    } else {
-                        $Status = 'failed';
-                        $Fault = '';
-                        $Message = 'تراکنش انجام نشد .';
-                    }
-                    if ($Status === 'completed' && isset($Transaction_ID) && $Transaction_ID !== 0) {
-                        update_post_meta($order_id, '_transaction_id', $Transaction_ID);
-                        $order->update_status( 'completed' );
-
-
-                        $order->payment_complete($Transaction_ID);
-                        $woocommerce->cart->empty_cart();
-
-                        $Note = sprintf(__('پرداخت موفقیت آمیز بود .<br/> کد رهگیری : %s', 'woocommerce'), $Transaction_ID);
-                        $Note = apply_filters('WC_Samaplugin_Return_from_Gateway_Success_Note', $Note, $order_id, $Transaction_ID);
-                        if ($Note)
-                            $order->add_order_note($Note, 1);
-
-
-                        $Notice = wpautop(wptexturize($this->successMassage));
-
-                        $Notice = str_replace('{transaction_id}', $Transaction_ID, $Notice);
-
-                        $Notice = apply_filters('WC_Samaplugin_Return_from_Gateway_Success_Notice', $Notice, $order_id, $Transaction_ID);
-                        if ($Notice)
-                            wc_add_notice($Notice, 'success');
-
-                        do_action('WC_Samaplugin_Return_from_Gateway_Success', $order_id, $Transaction_ID);
-
-                        wp_redirect(add_query_arg('wc_status', 'success', $this->get_return_url($order)));
-                        exit;
-                    }
-                    if (($Transaction_ID && ($Transaction_ID != 0))) {
-                        $tr_id = ('<br/>توکن : ' . $Transaction_ID);
-                    } else {
-                        $tr_id = '';
-                    }
-
-                    $Note = sprintf(__('خطا در هنگام بازگشت از بانک : %s %s', 'woocommerce'), $Message, $tr_id);
-
-                    $Note = apply_filters('WC_Samaplugin_Return_from_Gateway_Failed_Note', $Note, $order_id, $Transaction_ID, $Fault);
-                    if ($Note) {
-                        $order->add_order_note($Note, 1);
-                    }
-
-                    $Notice = wpautop(wptexturize($this->failedMassage));
-
-                    $Notice = str_replace(array('{transaction_id}', '{fault}'), array($Transaction_ID, $Message), $Notice);
-                    $Notice = apply_filters('WC_Samaplugin_Return_from_Gateway_Failed_Notice', $Notice, $order_id, $Transaction_ID, $Fault);
-                    if ($Notice) {
-                        wc_add_notice($Notice, 'error');
-                    }
-
-                    do_action('WC_Samaplugin_Return_from_Gateway_Failed', $order_id, $Transaction_ID, $Fault);
-
-                    wp_redirect(wc_get_checkout_url());
-                    exit;
-                }
-
-                $Transaction_ID = get_post_meta($order_id, '_transaction_id', true);
-
-                $Notice = wpautop(wptexturize($this->successMassage));
-
-                $Notice = str_replace('{transaction_id}', $Transaction_ID, $Notice);
-
-                $Notice = apply_filters('WC_Samaplugin_Return_from_Gateway_ReSuccess_Notice', $Notice, $order_id, $Transaction_ID);
-                if ($Notice) {
-                    wc_add_notice($Notice, 'success');
-                }
-
-                do_action('WC_Samaplugin_Return_from_Gateway_ReSuccess', $order_id, $Transaction_ID);
-
-                wp_redirect(add_query_arg('wc_status', 'success', $this->get_return_url($order)));
-                exit;
-            }
-
-            $Fault = __('شماره سفارش وجود ندارد .', 'woocommerce');
-            $Notice = wpautop(wptexturize($this->failedMassage));
-            $Notice = str_replace('{fault}', $Fault, $Notice);
-            $Notice = apply_filters('WC_Samaplugin_Return_from_Gateway_No_Order_ID_Notice', $Notice, $order_id, $Fault);
-            if ($Notice) {
-                wc_add_notice($Notice, 'error');
-            }
-
-            do_action('WC_Samaplugin_Return_from_Gateway_No_Order_ID', $order_id, '0', $Fault);
-
-
-
-            wp_redirect(wc_get_checkout_url());
-            exit;
 		}
 
-		public function sama_check_currency( $Amount, $currency ){
-			if( strtolower( $currency ) == strtolower('IRT') || strtolower( $currency ) == strtolower('TOMAN') || strtolower( $currency ) == strtolower('Iran TOMAN') || strtolower( $currency ) == strtolower('Iranian TOMAN') || strtolower( $currency ) == strtolower('Iran-TOMAN') || strtolower( $currency ) == strtolower('Iranian-TOMAN') || strtolower( $currency ) == strtolower('Iran_TOMAN') || strtolower( $currency ) == strtolower('Iranian_TOMAN') || strtolower( $currency ) == strtolower('تومان') || strtolower( $currency ) == strtolower('تومان ایران') ){
+		public function Return_from_sama_Gateway() {
+			$client_id = $_GET['client_id'];
+
+			global $woocommerce;
+
+			if ( isset( $_GET['wc_order'] ) ) {
+				$order_id = sanitize_text_field( $_GET['wc_order'] );
+			}
+
+			if ( $order_id ) {
+
+				$order    = new WC_Order( $order_id );
+				$currency = $order->get_currency();
+				$currency = apply_filters( 'WC_Samaplugin_Currency', $currency, $order_id );
+
+				if ( $order->status !== 'completed' ) {
+
+					$api_key = $this->api_key;
+
+					if ( isset( $client_id ) ) {
+
+						$MerchantID         = $this->api_key;
+						$Amount             = intval( $order->get_total() );
+						$Amount             = apply_filters( 'woocommerce_order_amount_total_IRANIAN_gateways_before_check_currency', $Amount, $currency );
+						$strToLowerCurrency = strtolower( $currency );
+						if (
+							( $strToLowerCurrency === strtolower( 'IRT' ) ) ||
+							( $strToLowerCurrency === strtolower( 'TOMAN' ) ) ||
+							$strToLowerCurrency === strtolower( 'Iran TOMAN' ) ||
+							$strToLowerCurrency === strtolower( 'Iranian TOMAN' ) ||
+							$strToLowerCurrency === strtolower( 'Iran-TOMAN' ) ||
+							$strToLowerCurrency === strtolower( 'Iranian-TOMAN' ) ||
+							$strToLowerCurrency === strtolower( 'Iran_TOMAN' ) ||
+							$strToLowerCurrency === strtolower( 'Iranian_TOMAN' ) ||
+							$strToLowerCurrency === strtolower( 'IRHT' ) ||
+							$strToLowerCurrency === strtolower( 'تومان' ) ||
+							$strToLowerCurrency === strtolower( 'IRHR' ) ||
+							$strToLowerCurrency === strtolower(
+								'تومان ایران'
+							)
+						) {
+							if ( strtolower( $currency ) === strtolower( 'IRHT' ) ) {
+								$Amount *= 1000;
+							} elseif ( strtolower( $currency ) === strtolower( 'IRHR' ) ) {
+								$Amount *= 100;
+							}
+						}
+						// else if (strtolower($currency) === strtolower('IRR')) {
+						// $Amount /= 10;
+						// }
+
+						$Authority = sanitize_text_field( $_GET['Authority'] );
+
+						$request_id = $_GET['request_id'];
+						$data       = array(
+							'client_id'  => $client_id,
+							'request_id' => $request_id,
+						);
+						$result     = $this->SendRequestToSama( 'guaranteed/payment/verify', json_encode( $data ) );
+
+						if ( $result['payment']['is_failed'] == false && $result['is_paid'] == true && $result['payment']['result_code'] == 0 ) {
+							$Status         = 'completed';
+							$Transaction_ID = $result['payment']['id'];
+							$Fault          = '';
+							$Message        = '';
+
+						} elseif ( $result['code'] == 101 ) {
+							// این حلقه اتفاق نخواهد افتاد و در حال حاضر قابلیت تایید درخواست تکراری توسط ای پی آی وجود ندارد اما برای آپدیت های بعدی قابل استفاده است
+							$Message        = 'این تراکنش قلا تایید شده است';
+							$Transaction_ID = $result['payment']['id'];
+							$Notice         = wpautop( wptexturize( $Message ) );
+							wp_redirect( add_query_arg( 'wc_status', 'success', $this->get_return_url( $order ) ) );
+							exit;
+						} else {
+							$Status  = 'failed';
+							$Fault   = $result['errors']['code'];
+							$Message = 'تراکنش ناموفق بود';
+						}
+					} else {
+						$Status  = 'failed';
+						$Fault   = '';
+						$Message = 'تراکنش انجام نشد .';
+					}
+					if ( $Status === 'completed' && isset( $Transaction_ID ) && $Transaction_ID !== 0 ) {
+						update_post_meta( $order_id, '_transaction_id', $Transaction_ID );
+						$order->update_status( 'completed' );
+
+						$order->payment_complete( $Transaction_ID );
+						$woocommerce->cart->empty_cart();
+
+						$Note = sprintf( __( 'پرداخت موفقیت آمیز بود .<br/> کد رهگیری : %s', 'woocommerce' ), $Transaction_ID );
+						$Note = apply_filters( 'WC_Samaplugin_Return_from_Gateway_Success_Note', $Note, $order_id, $Transaction_ID );
+						if ( $Note ) {
+							$order->add_order_note( $Note, 1 );
+						}
+
+						$Notice = wpautop( wptexturize( $this->successMassage ) );
+
+						$Notice = str_replace( '{transaction_id}', $Transaction_ID, $Notice );
+
+						$Notice = apply_filters( 'WC_Samaplugin_Return_from_Gateway_Success_Notice', $Notice, $order_id, $Transaction_ID );
+						if ( $Notice ) {
+							wc_add_notice( $Notice, 'success' );
+						}
+
+						do_action( 'WC_Samaplugin_Return_from_Gateway_Success', $order_id, $Transaction_ID );
+
+						wp_redirect( add_query_arg( 'wc_status', 'success', $this->get_return_url( $order ) ) );
+						exit;
+					}
+					if ( ( $Transaction_ID && ( $Transaction_ID != 0 ) ) ) {
+						$tr_id = ( '<br/>توکن : ' . $Transaction_ID );
+					} else {
+						$tr_id = '';
+					}
+
+					$Note = sprintf( __( 'خطا در هنگام بازگشت از بانک : %1$s %2$s', 'woocommerce' ), $Message, $tr_id );
+
+					$Note = apply_filters( 'WC_Samaplugin_Return_from_Gateway_Failed_Note', $Note, $order_id, $Transaction_ID, $Fault );
+					if ( $Note ) {
+						$order->add_order_note( $Note, 1 );
+					}
+
+					$Notice = wpautop( wptexturize( $this->failedMassage ) );
+
+					$Notice = str_replace( array( '{transaction_id}', '{fault}' ), array( $Transaction_ID, $Message ), $Notice );
+					$Notice = apply_filters( 'WC_Samaplugin_Return_from_Gateway_Failed_Notice', $Notice, $order_id, $Transaction_ID, $Fault );
+					if ( $Notice ) {
+						wc_add_notice( $Notice, 'error' );
+					}
+
+					do_action( 'WC_Samaplugin_Return_from_Gateway_Failed', $order_id, $Transaction_ID, $Fault );
+
+					wp_redirect( wc_get_checkout_url() );
+					exit;
+				}
+
+				$Transaction_ID = get_post_meta( $order_id, '_transaction_id', true );
+
+				$Notice = wpautop( wptexturize( $this->successMassage ) );
+
+				$Notice = str_replace( '{transaction_id}', $Transaction_ID, $Notice );
+
+				$Notice = apply_filters( 'WC_Samaplugin_Return_from_Gateway_ReSuccess_Notice', $Notice, $order_id, $Transaction_ID );
+				if ( $Notice ) {
+					wc_add_notice( $Notice, 'success' );
+				}
+
+				do_action( 'WC_Samaplugin_Return_from_Gateway_ReSuccess', $order_id, $Transaction_ID );
+
+				wp_redirect( add_query_arg( 'wc_status', 'success', $this->get_return_url( $order ) ) );
+				exit;
+			}
+
+			$Fault  = __( 'شماره سفارش وجود ندارد .', 'woocommerce' );
+			$Notice = wpautop( wptexturize( $this->failedMassage ) );
+			$Notice = str_replace( '{fault}', $Fault, $Notice );
+			$Notice = apply_filters( 'WC_Samaplugin_Return_from_Gateway_No_Order_ID_Notice', $Notice, $order_id, $Fault );
+			if ( $Notice ) {
+				wc_add_notice( $Notice, 'error' );
+			}
+
+			do_action( 'WC_Samaplugin_Return_from_Gateway_No_Order_ID', $order_id, '0', $Fault );
+
+			wp_redirect( wc_get_checkout_url() );
+			exit;
+		}
+
+		public function sama_check_currency( $Amount, $currency ) {
+			if ( strtolower( $currency ) == strtolower( 'IRT' ) || strtolower( $currency ) == strtolower( 'TOMAN' ) || strtolower( $currency ) == strtolower( 'Iran TOMAN' ) || strtolower( $currency ) == strtolower( 'Iranian TOMAN' ) || strtolower( $currency ) == strtolower( 'Iran-TOMAN' ) || strtolower( $currency ) == strtolower( 'Iranian-TOMAN' ) || strtolower( $currency ) == strtolower( 'Iran_TOMAN' ) || strtolower( $currency ) == strtolower( 'Iranian_TOMAN' ) || strtolower( $currency ) == strtolower( 'تومان' ) || strtolower( $currency ) == strtolower( 'تومان ایران' ) ) {
 				$Amount = $Amount * 1;
-			}elseif(strtolower($currency) == strtolower('IRHT')){
+			} elseif ( strtolower( $currency ) == strtolower( 'IRHT' ) ) {
 				$Amount = $Amount * 1000;
-			}elseif( strtolower( $currency ) == strtolower('IRHR') ){
+			} elseif ( strtolower( $currency ) == strtolower( 'IRHR' ) ) {
 				$Amount = $Amount * 100;
-			}elseif( strtolower( $currency ) == strtolower('IRR') ){
+			} elseif ( strtolower( $currency ) == strtolower( 'IRR' ) ) {
 				$Amount = $Amount / 10;
 			}
-			return  $Amount;
+			return $Amount;
 		}
 
-		public function status_message($code){
-			switch ($code){
-				case 200 :
+		public function status_message( $code ) {
+			switch ( $code ) {
+				case 200:
 					return 'عملیات با موفقیت انجام شد';
-					break ;
-				case 400 :
+					break;
+				case 400:
 					return 'مشکلی در ارسال درخواست وجود دارد';
-					break ;
-				case 500 :
+					break;
+				case 500:
 					return 'مشکلی در سرور رخ داده است';
 					break;
-				case 503 :
+				case 503:
 					return 'سرور در حال حاضر قادر به پاسخگویی نمی‌باشد';
 					break;
-				case 401 :
+				case 401:
 					return 'عدم دسترسی';
 					break;
-				case 403 :
+				case 403:
 					return 'دسترسی غیر مجاز';
 					break;
-				case 404 :
+				case 404:
 					return 'آیتم درخواستی مورد نظر موجود نمی‌باشد';
 					break;
 			}
