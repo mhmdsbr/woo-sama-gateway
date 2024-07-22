@@ -5,6 +5,7 @@ Version: 1.0.0
 Description:  افزونه درگاه پرداخت سما برای ووکامرس
 Plugin URI: https://www.sama.ir/
 Author: Mohammad Saber
+Text Domain: sana-gateway
 Author URI: https://mohammadsaber.com
 */
 if(!defined('ABSPATH')) exit;
@@ -357,21 +358,58 @@ function sama_register_order_approval_payment_method_type() {
 }
 
 
-
-
-
-// add new category to block editor
-// Adding a new (custom) block category and show that category at the top
-add_filter( 'block_categories_all', 'example_block_category', 10, 2);
-function example_block_category( $categories, $post ) {
-
-    array_unshift( $categories, array(
-        'slug'	=> 'woocommerce',
-        'title' => 'Woocommerce'
-    ) );
-
-    return $categories;
+/**
+ * Registers the slug as a block category with WordPress.
+ *
+ * @param array $categories Existing block categories.
+ * @return array
+ */
+function register_Custom_Gateway_block_category( $categories ) {
+    return array_merge(
+        $categories,
+        array(
+            array(
+                'slug'  => 'sama-block',
+                'title' => __( 'Sama Custom Blcok', 'sama-gateway' ),
+            ),
+        )
+    );
 }
+add_action( 'block_categories_all', 'register_Custom_Gateway_block_category', 10, 2 );
+
+
+
+/**
+ * Include the dependencies needed to instantiate the block.
+ */
+add_action(
+    'woocommerce_blocks_loaded',
+    function() {
+        require_once __DIR__ . '/sama-gateway-extend-store-endpoint.php';
+        require_once __DIR__ . '/sama-gateway-extend-woo-core.php';
+        require_once __DIR__ . '/sama-gateway-blocks-integration.php';
+
+        // Initialize our store endpoint extension when WC Blocks is loaded.
+        Sama_Gateway_Extend_Store_Endpoint::init();
+
+        // Add hooks relevant to extending the Woo core experience.
+        $extend_core = new Shipping_Workshop_Extend_Woo_Core();
+        $extend_core->init();
+
+        add_action(
+            'woocommerce_blocks_checkout_block_registration',
+            function( $integration_registry ) {
+                $integration_registry->register( new Sama_Gateway_Extend_Store_Endpoint() );
+            }
+        );
+    }
+);
+
+
+
+
+
+
 
 
 function ps_log($message) {

@@ -9,7 +9,6 @@ if( class_exists('WC_Payment_Gateway') && !class_exists('WC_sama') ){
          *
          * @var string
          */
-        const IDENTIFIER = 'sama_custom_gateway';
 
         private $api_key;
         private $failedMassage;
