@@ -109,76 +109,27 @@ function custom_checkout_button_script()
                 jQuery('p:empty').remove();
             }, 500);
             jQuery('p:empty').remove();
-            // $('.disable_all_and_enable_sama').click(function (e) {
-            //     e.preventDefault();
-            //     $('input[name="payment_method"]').prop('disabled', true);
-            //     // Uncheck other payment methods
-            //     $('input[name="payment_method"]').prop('checked', false);
-            //
-            //     /// Gutenberg Mode
-            //     // $('input[name="radio-control-wc-payment-method-options"]').prop('disabled', true);
-            //     // $('input[name="radio-control-wc-payment-method-options"]').prop('checked', false);
-            //
-            //     $('#payment_method_WC_sama').prop('checked', true);
-            //     $('#payment_method_WC_sama').prop('disabled', false);
-            //     $('#payment_method_WC_sama').click();
-            //     $("#payment_method_WC_sama").parent().fadeIn();
-            //
-            //     /// Gutenberg Mode
-            //     // $('.wc-block-components-radio-control-accordion-option').removeClass('wc-block-components-radio-control-accordion-option--checked-option-highlighted');
-            //     // $('.wc-block-components-radio-control-accordion-option label').removeClass('wc-block-components-radio-control__option-checked');
-            //     // $('#radio-control-wc-payment-method-options-WC_sama').parent().parent().addClass('wc-block-components-radio-control-accordion-option--checked-option-highlighted');
-            //     // $('#radio-control-wc-payment-method-options-WC_sama').parent().addClass('wc-block-components-radio-control__option-checked');
-            //     // $('#radio-control-wc-payment-method-options-WC_sama').prop('checked', true);
-            //     // $('#radio-control-wc-payment-method-options-WC_sama').prop('disabled', false);
-            //     // $('#radio-control-wc-payment-method-options-WC_sama').click();
-            //     // $("#radio-control-wc-payment-method-options-WC_sama").parent().fadeIn();
-            //
-            //
-            //     // cuctom style for disabled payments :
-            //     $("ul.wc_payment_methods > li:not(.payment_method_WC_sama)").addClass("disabled_by_sama_plugin");
-            //
-            //     if ($(this).hasClass("pardakht_etebari")) {
-            //         $("#sama_payment_type_f").val("pardakht_etebari");
-            //     } else {
-            //         $("#sama_payment_type_f").val("pardakht_zemanati");
-            //     }
-            // });
+            $('.disable_all_and_enable_sama').click(function (e) {
+                e.preventDefault();
+                $('input[name="payment_method"]').prop('disabled', true);
+                // Uncheck other payment methods
+                $('input[name="payment_method"]').prop('checked', false);
 
-            // Function to select the custom payment option
-            function selectCustomPaymentOption() {
-                const $customPaymentOption = $('#radio-control-wc-payment-method-options-WC_sama');
-                if ($customPaymentOption.length) {
-                    $('.wc-block-components-radio-control-accordion-option').removeClass('wc-block-components-radio-control-accordion-option--checked-option-highlighted');
-                    $('.wc-block-components-radio-control-accordion-option label').removeClass('wc-block-components-radio-control__option-checked');
-                    $('#radio-control-wc-payment-method-options-WC_sama').parent().parent().addClass('wc-block-components-radio-control-accordion-option--checked-option-highlighted');
-                    $('#radio-control-wc-payment-method-options-WC_sama').parent().addClass('wc-block-components-radio-control__option-checked');
-                    $('#radio-control-wc-payment-method-options-WC_sama').prop('checked', true);
-                    $('#radio-control-wc-payment-method-options-WC_sama').prop('disabled', false);
-                    $('#radio-control-wc-payment-method-options-WC_sama').click();
-                    $("#radio-control-wc-payment-method-options-WC_sama").parent().fadeIn();
-                    $customPaymentOption.prop('checked', true).trigger('change');
+
+                $('#payment_method_WC_sama').prop('checked', true);
+                $('#payment_method_WC_sama').prop('disabled', false);
+                $('#payment_method_WC_sama').click();
+                $("#payment_method_WC_sama").parent().fadeIn();
+
+
+                // cuctom style for disabled payments :
+                $("ul.wc_payment_methods > li:not(.payment_method_WC_sama)").addClass("disabled_by_sama_plugin");
+
+                if ($(this).hasClass("pardakht_etebari")) {
+                    $("#sama_payment_type_f").val("pardakht_etebari");
                 } else {
-                    console.warn('Custom payment option not found.');
+                    $("#sama_payment_type_f").val("pardakht_zemanati");
                 }
-            }
-
-            // Add a click event listener to the button with the class `.disable_all_and_enable_sama`
-            $('.disable_all_and_enable_sama').on('click', function() {
-                selectCustomPaymentOption();
-            });
-
-            // Handle the form submission directly
-            $(document).on('click', '.wc-block-components-checkout-place-order-button', function(e) {
-                e.preventDefault(); // Prevent the default form submission
-                // Ensure the custom payment option is selected before proceeding
-                selectCustomPaymentOption();
-                // Force WooCommerce to submit the form programmatically
-                // Get the WooCommerce Checkout instance and trigger the place order action
-
-                const checkout = window.wc.blocks.Checkout;
-                checkout.submitOrder();
-
             });
             $("#sama_payment_type_f").val("pardakht_Default");
             $('.w_en_all').click(function (e) {
@@ -408,15 +359,6 @@ function sama_register_order_approval_payment_method_type() {
 
 
 
-add_action( 'init', 'sama_custom_block_init' );
-function sama_custom_block_init() {
-    register_block_type_from_metadata(__DIR__ );
-}
-//function new_dynamic_callback( $attributes ): string
-//{
-//    return '<div class="new-dynamic-block">You said:<p>' . $attributes['customInput'] . '.</p></div>';
-//}
-
 
 // add new category to block editor
 // Adding a new (custom) block category and show that category at the top
@@ -443,17 +385,3 @@ function ps_log($message) {
 }
 
 
-function my_custom_gateway_select( $order ) {
-    // Replace 'your_custom_gateway' with your actual custom gateway ID
-    $custom_gateway_id = 'radio-control-wc-payment-method-options-WC_sama';
-
-    // Set the payment method to your custom gateway
-    $order->set_payment_method( $custom_gateway_id );
-
-    // Optionally, add custom meta data to the order
-    $order->update_meta_data( '_my_custom_gateway_selected', true );
-
-    // Save changes to the order
-    $order->save();
-}
-add_action( 'woocommerce_blocks_checkout_order_processed', 'my_custom_gateway_select' );

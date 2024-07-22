@@ -4,6 +4,13 @@ if(!defined('ABSPATH'))exit;
 if( class_exists('WC_Payment_Gateway') && !class_exists('WC_sama') ){
 	class WC_sama extends WC_Payment_Gateway{
 
+        /**
+         * Plugin Identifier, unique to each plugin.
+         *
+         * @var string
+         */
+        const IDENTIFIER = 'sama_custom_gateway';
+
         private $api_key;
         private $failedMassage;
         private $successMassage;
@@ -129,8 +136,13 @@ if( class_exists('WC_Payment_Gateway') && !class_exists('WC_sama') ){
          */
         public function SendRequestToSama($action, $params)
         {
+//            ps_log($action);
+//            ps_log($params);
+//            $sama_payment_type_f_name = sanitize_text_field($_POST['sama_payment_type_f_name']);
+//            ps_log($_POST);
+//            ps_log($_REQUEST);
             try {
-                $ch = curl_init('https://stage.app.sama.ir/api/stores/services/deposits/' . $action . '/');
+                $ch = curl_init('https://app.sama.ir/api/stores/services/deposits/' . $action . '/');
                 curl_setopt($ch, CURLOPT_USERAGENT, 'Sama Rest Api v1');
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $params);

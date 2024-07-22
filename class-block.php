@@ -1,7 +1,6 @@
 <?php
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
-use JetBrains\PhpStorm\ArrayShape;
 
 final class Sama_Gateway_Blocks extends AbstractPaymentMethodType {
 
@@ -9,7 +8,7 @@ final class Sama_Gateway_Blocks extends AbstractPaymentMethodType {
     protected $name = 'WC_sama';
 
     public function initialize() {
-        $this->settings = get_option( 'woocommerce_sama_gateway_settings', [] );
+        $this->settings = get_option( 'woocommerce_WC_sama_settings', [] );
         $this->gateway = new WC_sama();
     }
 
@@ -40,9 +39,10 @@ final class Sama_Gateway_Blocks extends AbstractPaymentMethodType {
         return [ 'sama_gateway-blocks-integration' ];
     }
 
-    #[ArrayShape(['title' => "mixed", 'description' => "mixed"])] public function get_payment_method_data(): array
+    public function get_payment_method_data(): array
     {
         return [
+            'name' => $this->name,
             'title' => $this->gateway->title,
             'description' => $this->gateway->description,
         ];
